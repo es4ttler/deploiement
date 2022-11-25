@@ -158,7 +158,8 @@ $app->delete('/api/client/{id}', function (Request $request, Response $response,
 });
 
 // POST - LOGIN
-$app->post('/api/login', function (Request $request, Response $response, $args) {   
+$app->post('/api/login', function (Request $request, Response $response, $args) {  
+    $err=false; 
     $inputJSON = file_get_contents('php://input');
     $response = addHeaders($response);
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
