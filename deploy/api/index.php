@@ -160,11 +160,12 @@ $app->delete('/api/client/{id}', function (Request $request, Response $response,
 // POST - LOGIN
 $app->post('/api/login', function (Request $request, Response $response, $args) {   
     $inputJSON = file_get_contents('php://input');
+    $response = addHeaders($response);
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
     $login = $body['login'] ?? ""; 
     $password = $body['password'] ?? "";
 
-    if (!preg_match("/[a-zA-Z0-9]{1,20}/",$login)|| !preg_match("/[a-zA-Z0-9]{1,20}/",$pass))  {
+    if (!preg_match("/[a-zA-Z0-9]{1,20}/",$login)|| !preg_match("/[a-zA-Z0-9]{1,20}/",$password))  {
         $err=true;
     }
 
