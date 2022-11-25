@@ -5,7 +5,7 @@ use Slim\Factory\AppFactory;
 use Tuupola\Middleware\HttpBasicAuthentication;
 use \Firebase\JWT\JWT;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-require __DIR__ . '../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
  
 const JWT_SECRET = "makey1234567";
 
