@@ -2,6 +2,11 @@
     "require": {
         "slim/slim": "^4.11",
         "slim/psr7": "^1.6",
-        "tuupola/slim-jwt-auth": "^3.6"
-    }
+        "tuupola/slim-jwt-auth": "^3.6",
+            "doctrine/orm" : "^2.13",
+            "symfony/yaml":"*" },
+            
+            "autoload":
+            {"classmap":["src/"]}
+            
 }
