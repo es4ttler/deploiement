@@ -4,13 +4,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Tuupola\Middleware\HttpBasicAuthentication;
 use \Firebase\JWT\JWT;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+
 require __DIR__ . '/../vendor/autoload.php';
- 
-const JWT_SECRET = "makey1234567";
+require_once __DIR__ . '/../bootstrap.php';
 
 $app = AppFactory::create();
-$app->addErrorMiddleware(true, true, true);
 
 function  addHeaders (Response $response) : Response {
     $response = $response
@@ -283,6 +281,9 @@ $app->delete('/api/fruit/{id}', function (Request $request, Response $response, 
 /*
 =================================================JWT=================================================
 */
+
+const JWT_SECRET = "TP-CNAM";
+
 $options = [
     "attribute" => "token",
     "header" => "Authorization",
@@ -298,6 +299,14 @@ $options = [
         return $response->withHeader("Content-Type", "application/json")->getBody()->write(json_encode($data));
     }
 ]; 
+
+function getJWTToken($request)
+{
+    $payload = str_replace("Bearer ", "", $request->getHeader('Authorization')[0]);
+    $token = JWT::decode($payload,JWT_SECRET , array("HS256"));
+    return $token; 
+}
+
 function createJwT (Response $response) : Response {
 
     $issuedAt = time();
