@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Driver\API\MySQL;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MariaDb1027Platform;
 use Doctrine\DBAL\Platforms\MySQL57Platform;
@@ -13,6 +14,7 @@ use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Schema\MySQLSchemaManager;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
+use Doctrine\Deprecations\Deprecation;
 
 use function assert;
 use function preg_match;
@@ -47,6 +49,13 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
             }
         }
 
+        Deprecation::trigger(
+            'doctrine/dbal',
+            'https://github.com/doctrine/dbal/pull/5060',
+            'MySQL 5.6 support is deprecated and will be removed in DBAL 4.'
+                . ' Consider upgrading to MySQL 5.7 or later.',
+        );
+
         return $this->getDatabasePlatform();
     }
 
@@ -64,12 +73,12 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
             preg_match(
                 '/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+))?)?/',
                 $versionString,
-                $versionParts
+                $versionParts,
             ) === 0
         ) {
             throw Exception::invalidPlatformVersionSpecified(
                 $versionString,
-                '<major_version>.<minor_version>.<patch_version>'
+                '<major_version>.<minor_version>.<patch_version>',
             );
         }
 
@@ -77,8 +86,8 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
         $minorVersion = $versionParts['minor'] ?? 0;
         $patchVersion = $versionParts['patch'] ?? null;
 
-        if ($majorVersion === '5' && $minorVersion === '7' && $patchVersion === null) {
-            $patchVersion = '9';
+        if ($majorVersion === '5' && $minorVersion === '7') {
+            $patchVersion ??= '9';
         }
 
         return $majorVersion . '.' . $minorVersion . '.' . $patchVersion;
@@ -98,12 +107,12 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
             preg_match(
                 '/^(?:5\.5\.5-)?(mariadb-)?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)/i',
                 $versionString,
-                $versionParts
+                $versionParts,
             ) === 0
         ) {
             throw Exception::invalidPlatformVersionSpecified(
                 $versionString,
-                '^(?:5\.5\.5-)?(mariadb-)?<major_version>.<minor_version>.<patch_version>'
+                '^(?:5\.5\.5-)?(mariadb-)?<major_version>.<minor_version>.<patch_version>',
             );
         }
 
@@ -113,7 +122,7 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
     /**
      * {@inheritdoc}
      *
-     * @return MySQLPlatform
+     * @return AbstractMySQLPlatform
      */
     public function getDatabasePlatform()
     {
@@ -123,11 +132,20 @@ abstract class AbstractMySQLDriver implements VersionAwarePlatformDriver
     /**
      * {@inheritdoc}
      *
+     * @deprecated Use {@link AbstractMySQLPlatform::createSchemaManager()} instead.
+     *
      * @return MySQLSchemaManager
      */
     public function getSchemaManager(Connection $conn, AbstractPlatform $platform)
     {
-        assert($platform instanceof MySQLPlatform);
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/dbal',
+            'https://github.com/doctrine/dbal/pull/5458',
+            'AbstractMySQLDriver::getSchemaManager() is deprecated.'
+                . ' Use MySQLPlatform::createSchemaManager() instead.',
+        );
+
+        assert($platform instanceof AbstractMySQLPlatform);
 
         return new MySQLSchemaManager($conn, $platform);
     }

@@ -104,11 +104,11 @@ final class Connection implements ServerInfoAwareConnection
             Deprecation::triggerIfCalledFromOutside(
                 'doctrine/dbal',
                 'https://github.com/doctrine/dbal/issues/4687',
-                'The usage of Connection::lastInsertId() with a sequence name is deprecated.'
+                'The usage of Connection::lastInsertId() with a sequence name is deprecated.',
             );
         }
 
-        return db2_last_insert_id($this->connection);
+        return db2_last_insert_id($this->connection) ?? false;
     }
 
     public function beginTransaction(): bool
@@ -141,5 +141,11 @@ final class Connection implements ServerInfoAwareConnection
         assert(is_bool($result));
 
         return $result;
+    }
+
+    /** @return resource */
+    public function getNativeConnection()
+    {
+        return $this->connection;
     }
 }

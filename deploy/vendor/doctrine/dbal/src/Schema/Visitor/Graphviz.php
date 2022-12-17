@@ -13,11 +13,12 @@ use function strtolower;
 
 /**
  * Create a Graphviz output of a Schema.
+ *
+ * @deprecated
  */
 class Graphviz extends AbstractVisitor
 {
-    /** @var string */
-    private $output = '';
+    private string $output = '';
 
     /**
      * {@inheritdoc}
@@ -31,7 +32,7 @@ class Graphviz extends AbstractVisitor
                 'dir'       => 'back',
                 'arrowtail' => 'dot',
                 'arrowhead' => 'normal',
-            ]
+            ],
         );
     }
 
@@ -58,7 +59,7 @@ class Graphviz extends AbstractVisitor
             [
                 'label' => $this->createTableLabel($table),
                 'shape' => 'plaintext',
-            ]
+            ],
         );
     }
 
