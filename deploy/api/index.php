@@ -9,6 +9,13 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../bootstrap.php';
 
 $app = AppFactory::create();
+$app->addErrorMiddleware(true, true, true);
+
+/*
+=================================================JWT=================================================
+*/
+
+const JWT_SECRET = "TP-CNAM";
 
 function  addHeaders (Response $response) : Response {
     $response = $response
@@ -20,6 +27,49 @@ function  addHeaders (Response $response) : Response {
 
     return $response;
 }
+
+$options = [
+    "attribute" => "token",
+    "header" => "Authorization",
+    "regexp" => "/Bearer\s+(.*)$/i",
+    "secure" => false,
+    "algorithm" => ["HS256"],
+    "secret" => JWT_SECRET,
+    "path" => ["/api"],
+    "ignore" => ["/api/hello","/api/login","/api/createUser"],
+    "error" => function ($response, $arguments) {
+        $data = array('ERREUR' => 'Connexion', 'ERREUR' => 'JWT Non valide');
+        $response = $response->withStatus(401);
+        return $response->withHeader("Content-Type", "application/json")->getBody()->write(json_encode($data));
+    }
+]; 
+
+function getJWTToken($request)
+{
+    $payload = str_replace("Bearer ", "", $request->getHeader('Authorization')[0]);
+    $token = JWT::decode($payload,JWT_SECRET , array("HS256"));
+    return $token; 
+}
+
+function createJwT (Response $response) : Response {
+
+    $issuedAt = time();
+    $expirationTime = $issuedAt + 60;
+    
+    $payload = array(
+    'userid' => 'sattlee',
+    'email' => 'sattlee@gmail.com',
+    'pseudo' => 'esat',
+    'iat' => $issuedAt,
+    'exp' => $expirationTime
+    );
+
+    $token_jwt = JWT::encode($payload,JWT_SECRET, "HS256");
+    $response = $response->withHeader("Authorization", "Bearer {$token_jwt}");
+
+    return $response;
+}
+
 
 
 
@@ -38,6 +88,8 @@ $app->get('/api/hello/{name}', function (Request $request, Response $response, $
 /*
 =================================================CLIENT=================================================
 */
+
+$userRepository = $entityManager->getRepository('user');
 
 // GET - GET ALL CLIENTS
 $app->get('/api/clients', function (Request $request, Response $response, $args) {
@@ -168,7 +220,9 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
         $err=true;
     }
 
-    if (!$err) {
+    $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
+
+    if (!$err && !empty($user)) {
             $response = createJwT ($response);
             $data = array('login' => $login);
             $response->getBody()->write(json_encode($data));
@@ -278,53 +332,7 @@ $app->delete('/api/fruit/{id}', function (Request $request, Response $response, 
     return $response;
 });
 
-/*
-=================================================JWT=================================================
-*/
 
-const JWT_SECRET = "TP-CNAM";
-
-$options = [
-    "attribute" => "token",
-    "header" => "Authorization",
-    "regexp" => "/Bearer\s+(.*)$/i",
-    "secure" => false,
-    "algorithm" => ["HS256"],
-    "secret" => JWT_SECRET,
-    "path" => ["/api"],
-    "ignore" => ["/api/hello","/api/login","/api/createUser"],
-    "error" => function ($response, $arguments) {
-        $data = array('ERREUR' => 'Connexion', 'ERREUR' => 'JWT Non valide');
-        $response = $response->withStatus(401);
-        return $response->withHeader("Content-Type", "application/json")->getBody()->write(json_encode($data));
-    }
-]; 
-
-function getJWTToken($request)
-{
-    $payload = str_replace("Bearer ", "", $request->getHeader('Authorization')[0]);
-    $token = JWT::decode($payload,JWT_SECRET , array("HS256"));
-    return $token; 
-}
-
-function createJwT (Response $response) : Response {
-
-    $issuedAt = time();
-    $expirationTime = $issuedAt + 60;
-    
-    $payload = array(
-    'userid' => 'sattlee',
-    'email' => 'sattlee@gmail.com',
-    'pseudo' => 'esat',
-    'iat' => $issuedAt,
-    'exp' => $expirationTime
-    );
-
-    $token_jwt = JWT::encode($payload,JWT_SECRET, "HS256");
-    $response = $response->withHeader("Authorization", "Bearer {$token_jwt}");
-
-    return $response;
-}
 
 
 $app->add(new Tuupola\Middleware\JwtAuthentication($options));
