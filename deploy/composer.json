@@ -6,7 +6,9 @@
             "doctrine/orm" : "^2.13",
             "symfony/yaml":"*" },
             
-            "autoload":
-            {"classmap":["src/"]}
+            "autoload": {
+                "psr-0": {"": "src/"}
+        
+            }        
             
 }
