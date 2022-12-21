@@ -6,7 +6,7 @@ require_once "vendor/autoload.php";
 $isDevMode = true;
 $config = Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/config/yaml"), $isDevMode);
 $conn = array(
-'host' => 'dpg-cedisa02i3mr7lh3is20-a.frankfurt-postgres.render.com',
+'host' => 'dpg-cedisa02i3mr7lh3is20-a/fruit_app',
 'driver' => 'pdo_pgsql',
 'user' => 'esattler',
 'password' => 'Sir2okTfglXCpGOfQ9F5oyWptSC3T42P',
