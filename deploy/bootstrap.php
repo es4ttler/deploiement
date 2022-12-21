@@ -10,7 +10,7 @@ $conn = array(
 'driver' => 'pdo_pgsql',
 'user' => 'esattler',
 'password' => 'Sir2okTfglXCpGOfQ9F5oyWptSC3T42P',
-'dbname' => 'sattler-emma-db',
+'dbname' => 'fruit_app',
 'port' => '5432'
 );
 $entityManager = EntityManager::create($conn, $config);
