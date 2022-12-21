@@ -88,7 +88,7 @@ $app->get('/api/hello/{name}', function (Request $request, Response $response, $
 /*
 =================================================CLIENT=================================================
 */
-global $entityManager;
+
 $userRepository =$entityManager->getRepository('User');
 
 // GET - GET ALL CLIENTS
@@ -114,6 +114,7 @@ $app->get('/api/client/{id}', function (Request $request, Response $response, $a
 $app->post('/api/client', function (Request $request, Response $response, $args) {
     $inputJSON = file_get_contents('php://input');
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array
+    $id=$body['id'] ?? "";
     $civility=$body['civility'] ?? "";
     $firstName = $body ['firstName'] ?? "";
     $name = $body ['name'] ?? ""; 
@@ -210,6 +211,7 @@ $app->delete('/api/client/{id}', function (Request $request, Response $response,
 // POST - LOGIN
 $app->post('/api/login', function (Request $request, Response $response, $args) {  
     $err=false; 
+    global $entityManager;
     $inputJSON = file_get_contents('php://input');
     $response = addHeaders($response);
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
@@ -220,7 +222,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
         $err=true;
     }
 
-    $user = $userRepository->findOneBy(array('login' => $login, 'password' => $password));
+    $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
 
     if (!$err && !empty($user)) {
             $response = createJwT ($response);
