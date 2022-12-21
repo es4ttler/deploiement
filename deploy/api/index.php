@@ -88,8 +88,8 @@ $app->get('/api/hello/{name}', function (Request $request, Response $response, $
 /*
 =================================================CLIENT=================================================
 */
-
-$userRepository = $entityManager->getRepository('User');
+global $entityManager;
+$userRepository =$entityManager->getRepository('User');
 
 // GET - GET ALL CLIENTS
 $app->get('/api/clients', function (Request $request, Response $response, $args) {
@@ -220,7 +220,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
         $err=true;
     }
 
-    $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
+    $user = $userRepository->findOneBy(array('login' => $login, 'password' => $password));
 
     if (!$err && !empty($user)) {
             $response = createJwT ($response);
