@@ -128,10 +128,10 @@ $app->post('/api/client', function (Request $request, Response $response, $args)
     $err=false;
 
     //check format name, email and password
-    if (empty($lastName) || empty($firstName) || empty($email) || empty($phone) || empty($address) || empty($city) || empty($codeCity) || empty($country) || empty($login) || empty($password) || empty($civility) || 
-        !preg_match("/^[a-zA-Z0-9]+$/", $lastName) || !preg_match("/^[a-zA-Z0-9]+$/", $firstName) ||  
+    if (empty($name) || empty($firstName) || empty($email) || empty($phone) || empty($address) || empty($city) || empty($codeCity) || empty($country) || empty($login) || empty($password) || empty($civility) || 
+        !preg_match("/^[a-zA-Z0-9]+$/", $name) || !preg_match("/^[a-zA-Z0-9]+$/", $firstName) ||  
         !preg_match("/^[a-zA-Z0-9]+$/", $city) || 
-        !preg_match("/^[0-9]+$/", $codeCity) || !preg_match("/^[a-zA-Z0-9]+$/", $country) || !preg_match("/^[a-zA-Z0-9]+$/", $civility)) {
+        !preg_match("/^[0-9]+$/", $cp) || !preg_match("/^[a-zA-Z0-9]+$/", $country) || !preg_match("/^[a-zA-Z0-9]+$/", $civility)) {
         $err=true;
     }
 
@@ -220,7 +220,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
         $err=true;
     }
 
-    $user = $userRepository->findOneBy(array('login' => $login, 'password' => $password));
+    $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
 
     if (!$err && !empty($user)) {
             $response = createJwT ($response);
