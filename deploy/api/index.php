@@ -36,7 +36,7 @@ $options = [
     "algorithm" => ["HS256"],
     "secret" => JWT_SECRET,
     "path" => ["/api"],
-    "ignore" => ["/api/hello","/api/login","/api/createUser"],
+    "ignore" => ["/api/hello","/api/catalog","/api/login","/api/createUser"],
     "error" => function ($response, $arguments) {
         $data = array('ERREUR' => 'Connexion', 'ERREUR' => 'JWT Non valide');
         $response = $response->withStatus(401);
@@ -51,15 +51,14 @@ function getJWTToken($request)
     return $token; 
 }
 
-function createJwT (Response $response) : Response {
+function createJwT (Response $response,$login, $password) : Response {
 
     $issuedAt = time();
     $expirationTime = $issuedAt + 60;
     
     $payload = array(
-    'userid' => 'sattlee',
-    'email' => 'sattlee@gmail.com',
-    'pseudo' => 'esat',
+    'login' => $login,
+    'password' => $password,
     'iat' => $issuedAt,
     'exp' => $expirationTime
     );
@@ -213,7 +212,6 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     $err=false; 
     global $entityManager;
     $inputJSON = file_get_contents('php://input');
-    $response = addHeaders($response);
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
     $login = $body['login'] ?? ""; 
     $password = $body['password'] ?? "";
@@ -225,8 +223,9 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
 
     if (!$err && !empty($user)) {
-            $response = createJwT ($response);
+            $response = createJwT ($response,$login,$password);
             $data = array('login' => $login);
+            $response = addHeaders($response);
             $response->getBody()->write(json_encode($data));
      } else {          
             $response = $response->withStatus(401);
