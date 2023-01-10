@@ -99,13 +99,13 @@ $app->get('/api/clients', function (Request $request, Response $response, $args)
 });
 
 // GET - GET CLIENT BY ID
-$app->get('/api/client/{id}', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../mock/client.json");
-    $array = json_decode($json, true);
-    $id = $args ['id'];
-    $array = $array[$id];
-    $response = addHeaders($response);
-    $response->getBody()->write(json_encode ($array));
+$app->get('/api/client/{login}', function (Request $request, Response $response, $args) {
+    global $entityManager;
+    $id = $args ['login'];
+
+    $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login));
+    // $response = addHeaders($response);
+    $response->getBody()->write(json_encode ($user));
     return $response;
 });
 
