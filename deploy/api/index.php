@@ -211,17 +211,18 @@ $app->delete('/api/client/{id}', function (Request $request, Response $response,
 $app->post('/api/login', function (Request $request, Response $response, $args) {  
     $err=false; 
     global $entityManager;
-    $inputJSON = file_get_contents('php://input');
-    $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
+    // $inputJSON = file_get_contents('php://input');
+    // $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
     $login = $body['login'] ?? ""; 
     $password = $body['password'] ?? "";
 
     if (!preg_match("/[a-zA-Z0-9]{1,20}/",$login)|| !preg_match("/[a-zA-Z0-9]{1,20}/",$password))  {
         $err=true;
     }
-
+    var_dump("a");
+    
     $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
-
+    var_dump("b");
     if (!$err && !empty($user)) {
             $response = createJwT ($response,$login,$password);
             $data = array('login' => $login);
