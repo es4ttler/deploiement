@@ -242,7 +242,8 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
 
     $user = $entityManager->getRepository('User');
     // var_dump($user);
-    $user = $user->findOneBy(array('login' => 'e', 'password' => 'e'));
+    // $user = $user->findOneBy(array('login' => 'e', 'password' => 'e'));
+    $user = $user->findAll();
     var_dump($user);
 
 
