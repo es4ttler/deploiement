@@ -20,7 +20,7 @@ const JWT_SECRET = "TP-CNAM";
 function  addHeaders (Response $response) : Response {
     $response = $response
     ->withHeader("Content-Type", "application/json")
-    ->withHeader('Access-Control-Allow-Origin', ('https://sattler-emma.onrender.com'))
+    ->withHeader('Access-Control-Allow-Origin', ('*'))
     ->withHeader('Access-Control-Allow-Headers', 'Content-Type,  Authorization')
     ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
     ->withHeader('Access-Control-Expose-Headers', 'Authorization');
@@ -238,10 +238,10 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     if (!preg_match("/[a-zA-Z0-9]{1,20}/",$login)|| !preg_match("/[a-zA-Z0-9]{1,20}/",$password))  {
         $err=true;
     }
-    var_dump("a");
+    var_dump($login, $password);
 
     $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
-    var_dump("b");
+
     if (!$err && !empty($user)) {
             $response = createJwT ($response,$login,$password);
             $data = array('login' => $login);
