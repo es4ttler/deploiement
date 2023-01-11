@@ -155,8 +155,6 @@ $app->post('/api/client', function (Request $request, Response $response, $args)
 
 //PUT - UPDATE CLIENT
 $app->put('/api/client/{id}', function (Request $request, Response $response, $args) {
-    $inputJSON = file_get_contents('php://input');
-    $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
     $civility=$body['civility'] ?? "";
     $firstName = $body ['firstName'] ?? "";
     $name = $body ['name'] ?? ""; 
@@ -177,16 +175,27 @@ $app->put('/api/client/{id}', function (Request $request, Response $response, $a
         !preg_match("/^[0-9]+$/", $cp) || !preg_match("/^[a-zA-Z0-9]+$/", $country) || !preg_match("/^[a-zA-Z0-9]+$/", $civility)) {
         $err=true;
     }
+    $id = $args ['id'];
+    global $entityManager;
+    
+    $user = $entityManager->find('User', $id);
 
-    if (!$err) {
-        $json = file_get_contents("../mock/client.json");
-        $array = json_decode($json, true);
-        $id = $args ['id'];
-        $array[$id] = array('id' => $id, 'name' => $name, 'firstName' => $firstName, 'email' => $email, 'tel' => $tel, 'address' => $address, 'city' => $city, 'cp' => $cp, 'country' => $country, 'login' => $login, 'password' => $password, 'civility' => $civility);
-        $json = json_encode($array);
-        file_put_contents("../mock/client.json", $json);
+    if (!$err && $user!=null) {
+        
+        $user->setName($name);
+        $user->setFirstName($firstName);
+        $user->setCp($cp);
+        $user->setTel($tel);
+        $user->setEmail($email);
+        $user->setCivility($civility);
+        $user->setLogin($login);
+        $user->setPassword($password);
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+        
         $response = addHeaders($response);
-        $response->getBody()->write($json);
+        $response->getBody()->write(json_encode ($user));
     }
     else{          
         $response = $response->withStatus(401);
@@ -196,14 +205,24 @@ $app->put('/api/client/{id}', function (Request $request, Response $response, $a
 
 //DELETE - DELETE CLIENT
 $app->delete('/api/client/{id}', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../mock/client.json");
-    $array = json_decode($json, true);
+    $err=false;
+    global $entityManager;
     $id = $args ['id'];
+
+    $user = $entityManager->find('User', $id);
+    if ($user == null) {
+        echo "User $id does not exist.\n";
+        $response = $response->withStatus(401);
+    }
+    else{
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        $response = addHeaders($response);
+        $response->getBody()->write(json_encode ($user));
+    }
     unset($array[$id]);
-    $json = json_encode($array);
-    file_put_contents("../mock/client.json", $json);
-    $response = addHeaders($response);
-    $response->getBody()->write($json);
+    
     return $response;
 });
 
@@ -220,7 +239,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
         $err=true;
     }
     var_dump("a");
-    
+
     $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login, 'password' => $password));
     var_dump("b");
     if (!$err && !empty($user)) {
