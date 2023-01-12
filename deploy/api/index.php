@@ -141,16 +141,13 @@ $app->post('/api/client/add', function (Request $request, Response $response, $a
     }
 
     if (!$err) {
-        // $json = file_get_contents("../assets/mock/clients.json");
-        // $array = json_decode($json, true);
-        // $id = count($array);
+        global $entityManager;
+    
+        $user = $entityManager->getRepository('Client');
+        $user->persist($body);
 
-        //Create a new client in an array
-        $array = array('id' => $id, 'name' => $name, 'firstName' => $firstName, 'email' => $email, 'tel' => $tel, 'address' => $address, 'city' => $city, 'cp' => $cp, 'country' => $country, 'login' => $login, 'password' => $password, 'civility' => $civility);
-        $json = json_encode($array);
-        // file_put_contents("../assets/mock/clients.json", $json);
         $response = addHeaders($response);
-        $response->getBody()->write($json);
+       $response->getBody()->write(json_encode ($body));
     }
     else{          
         $response = $response->withStatus(401);

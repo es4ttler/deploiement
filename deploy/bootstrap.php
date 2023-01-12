@@ -1,6 +1,16 @@
 <?php
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
+$encoders = [new JsonEncoder()];
+$normalizers = [new ObjectNormalizer()];
+$serializer = new Serializer($normalizers, $encoders);
+$jsonContent = $serializer->serialize($yourDoctrineObject, 'json');
+
 date_default_timezone_set('America/Lima');
 require_once "vendor/autoload.php";
 $isDevMode = true;
