@@ -92,19 +92,24 @@ $userRepository =$entityManager->getRepository('User');
 
 // GET - GET ALL CLIENTS
 $app->get('/api/clients', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../mock/client.json");
+    global $entityManager;
+
+    $users=$entityManager->getRepository('User')->findAll();
+
     $response = addHeaders($response);
-    $response->getBody()->write($json);
+    $response->getBody()->write(json_encode ($users));
+
     return $response;
 });
 
 // GET - GET CLIENT BY ID
 $app->get('/api/client/{login}', function (Request $request, Response $response, $args) {
     global $entityManager;
-    $id = $args ['login'];
+    $login = $args ['login'];
 
     $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login));
-    // $response = addHeaders($response);
+    
+    $response = addHeaders($response);
     $response->getBody()->write(json_encode ($user));
     return $response;
 });
@@ -136,14 +141,14 @@ $app->post('/api/client/add', function (Request $request, Response $response, $a
     }
 
     if (!$err) {
-        // $json = file_get_contents("../mock/clients.json");
+        // $json = file_get_contents("../assets/mock/clients.json");
         // $array = json_decode($json, true);
         // $id = count($array);
 
         //Create a new client in an array
         $array = array('id' => $id, 'name' => $name, 'firstName' => $firstName, 'email' => $email, 'tel' => $tel, 'address' => $address, 'city' => $city, 'cp' => $cp, 'country' => $country, 'login' => $login, 'password' => $password, 'civility' => $civility);
         $json = json_encode($array);
-        // file_put_contents("../mock/clients.json", $json);
+        // file_put_contents("../assets/mock/clients.json", $json);
         $response = addHeaders($response);
         $response->getBody()->write($json);
     }
@@ -265,7 +270,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
 
 //GET - GET ALL FRUITS
 $app->get('/api/fruits', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../mock/catalog.json");
+    $json = file_get_contents("../assets/mock/catalog.json");
     $array = json_decode($json, true);
     $response = addHeaders($response);
     $response->getBody()->write($json);
@@ -274,7 +279,7 @@ $app->get('/api/fruits', function (Request $request, Response $response, $args) 
 
 //GET - GET FRUIT BY ID
 $app->get('/api/fruit/{id}', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../mock/catalog.json");
+    $json = file_get_contents("../assets/mock/catalog.json");
     $array = json_decode($json, true);
     $id = $args ['id'];
     $array = $array[$id];
@@ -299,12 +304,12 @@ $app->post('/api/fruit/add', function (Request $request, Response $response, $ar
     }
 
     if (!$err) {
-        $json = file_get_contents("../mock/catalog.json");
+        $json = file_get_contents("../assets/mock/catalog.json");
         $array = json_decode($json, true);
         $id = count($array);
         $array[] = array('id' => $id, 'name' => $name, 'price' => $price, 'color' => $color);
         $json = json_encode($array);
-        file_put_contents("../mock/catalog.json", $json);
+        file_put_contents("../assets/mock/catalog.json", $json);
         $response = addHeaders($response);
         $response->getBody()->write($json);
     }
@@ -330,12 +335,12 @@ $app->put('/api/fruit/update/{id}', function (Request $request, Response $respon
     }
 
     if (!$err) {
-        $json = file_get_contents("../mock/catalog.json");
+        $json = file_get_contents("../assets/mock/catalog.json");
         $array = json_decode($json, true);
         $id = $args ['id'];
         $array[$id] = array('id' => $id, 'name' => $name, 'price' => $price, 'color' => $color);
         $json = json_encode($array);
-        file_put_contents("../mock/catalog.json", $json);
+        file_put_contents("../assets/mock/catalog.json", $json);
         $response = addHeaders($response);
         $response->getBody()->write($json);
     }
@@ -347,12 +352,12 @@ $app->put('/api/fruit/update/{id}', function (Request $request, Response $respon
 
 //DELETE - DELETE FRUIT
 $app->delete('/api/fruit/delete/{id}', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../mock/catalog.json");
+    $json = file_get_contents("../assets/mock/catalog.json");
     $array = json_decode($json, true);
     $id = $args ['id'];
     unset($array[$id]);
     $json = json_encode($array);
-    file_put_contents("../mock/catalog.json", $json);
+    file_put_contents("../assets/mock/catalog.json", $json);
     $response->getBody()->write($json);
     $response = addHeaders($response);
     return $response;
