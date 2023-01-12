@@ -7,6 +7,8 @@ use \Firebase\JWT\JWT;
 
 require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../model/Client.php';
+require_once __DIR__ . '/../model/Fruit.php';
 
 $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
