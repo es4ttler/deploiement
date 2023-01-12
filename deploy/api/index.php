@@ -110,7 +110,7 @@ $app->get('/api/client/{login}', function (Request $request, Response $response,
 });
 
 // POST - CREATE CLIENT
-$app->post('/api/client', function (Request $request, Response $response, $args) {
+$app->post('/api/client/add', function (Request $request, Response $response, $args) {
     $inputJSON = file_get_contents('php://input');
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array
     $id=$body['id'] ?? "";
@@ -154,7 +154,7 @@ $app->post('/api/client', function (Request $request, Response $response, $args)
 });
 
 //PUT - UPDATE CLIENT
-$app->put('/api/client/{id}', function (Request $request, Response $response, $args) {
+$app->put('/api/client/update/{id}', function (Request $request, Response $response, $args) {
     $civility=$body['civility'] ?? "";
     $firstName = $body ['firstName'] ?? "";
     $name = $body ['name'] ?? ""; 
@@ -204,7 +204,7 @@ $app->put('/api/client/{id}', function (Request $request, Response $response, $a
 });
 
 //DELETE - DELETE CLIENT
-$app->delete('/api/client/{id}', function (Request $request, Response $response, $args) {
+$app->delete('/api/client/delete/{id}', function (Request $request, Response $response, $args) {
     $err=false;
     global $entityManager;
     $id = $args ['id'];
@@ -243,7 +243,7 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     $user = $entityManager->getRepository('User');
     var_dump($user);
     // $user = $user->findOneBy(array('login' => 'e', 'password' => 'e'));
-    $user = $user->findAll();
+    $user = $user->findAll();   
     var_dump($user);
 
 
@@ -284,7 +284,7 @@ $app->get('/api/fruit/{id}', function (Request $request, Response $response, $ar
 });
 
 //POST - ADD FRUIT
-$app->post('/api/fruit', function (Request $request, Response $response, $args) {
+$app->post('/api/fruit/add', function (Request $request, Response $response, $args) {
     $inputJSON = file_get_contents('php://input');
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
     $name = $body ['name'] ?? ""; 
@@ -315,7 +315,7 @@ $app->post('/api/fruit', function (Request $request, Response $response, $args) 
 });
 
 //UPDATE - UPDATE FRUIT
-$app->put('/api/fruit/{id}', function (Request $request, Response $response, $args) {
+$app->put('/api/fruit/update/{id}', function (Request $request, Response $response, $args) {
     $inputJSON = file_get_contents('php://input');
     $body = json_decode( $inputJSON, TRUE ); //convert JSON into array 
     $name = $body ['name'] ?? ""; 
@@ -346,7 +346,7 @@ $app->put('/api/fruit/{id}', function (Request $request, Response $response, $ar
 });
 
 //DELETE - DELETE FRUIT
-$app->delete('/api/fruit/{id}', function (Request $request, Response $response, $args) {
+$app->delete('/api/fruit/delete/{id}', function (Request $request, Response $response, $args) {
     $json = file_get_contents("../mock/catalog.json");
     $array = json_decode($json, true);
     $id = $args ['id'];
