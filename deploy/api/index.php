@@ -270,10 +270,12 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
 
 //GET - GET ALL FRUITS
 $app->get('/api/fruits', function (Request $request, Response $response, $args) {
-    $json = file_get_contents("../assets/mock/catalog.json");
-    $array = json_decode($json, true);
+    global $entityManager;	
+    $fruits = $entityManager->getRepository('Fruit')->findAll();
+    // $json = file_get_contents("../assets/mock/catalog.json");
+    // $array = json_decode($json, true);
     $response = addHeaders($response);
-    $response->getBody()->write($json);
+    $response->getBody()->write(json_encode($fruits));
     return $response;
 });
 
