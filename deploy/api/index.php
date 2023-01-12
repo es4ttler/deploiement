@@ -36,7 +36,7 @@ $options = [
     "algorithm" => ["HS256"],
     "secret" => JWT_SECRET,
     "path" => ["/api"],
-    "ignore" => ["/api/hello","/api/catalog","/api/login","/api/createUser"],
+    "ignore" => ["/api/hello","/api/fruits","/api/login","/api/client/add","/api/clients"],
     "error" => function ($response, $arguments) {
         $data = array('ERREUR' => 'Connexion', 'ERREUR' => 'JWT Non valide');
         $response = $response->withStatus(401);
@@ -154,7 +154,7 @@ $app->post('/api/client/add', function (Request $request, Response $response, $a
 });
 
 //PUT - UPDATE CLIENT
-$app->put('/api/client/update/{id}', function (Request $request, Response $response, $args) {
+$app->put('/api/client/{id}', function (Request $request, Response $response, $args) {
     $civility=$body['civility'] ?? "";
     $firstName = $body ['firstName'] ?? "";
     $name = $body ['name'] ?? ""; 
@@ -204,7 +204,7 @@ $app->put('/api/client/update/{id}', function (Request $request, Response $respo
 });
 
 //DELETE - DELETE CLIENT
-$app->delete('/api/client/delete/{id}', function (Request $request, Response $response, $args) {
+$app->delete('/api/client/{id}', function (Request $request, Response $response, $args) {
     $err=false;
     global $entityManager;
     $id = $args ['id'];
