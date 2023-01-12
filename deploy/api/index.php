@@ -88,13 +88,13 @@ $app->get('/api/hello/{name}', function (Request $request, Response $response, $
 =================================================CLIENT=================================================
 */
 
-$userRepository =$entityManager->getRepository('User');
+$userRepository =$entityManager->getRepository('Client');
 
 // GET - GET ALL CLIENTS
 $app->get('/api/clients', function (Request $request, Response $response, $args) {
     global $entityManager;
 
-    $users=$entityManager->getRepository('User')->findAll();
+    $users=$entityManager->getRepository('Client')->findAll();
 
     $response = addHeaders($response);
     $response->getBody()->write(json_encode ($users));
@@ -107,7 +107,7 @@ $app->get('/api/client/{login}', function (Request $request, Response $response,
     global $entityManager;
     $login = $args ['login'];
 
-    $user = $entityManager->getRepository('User')->findOneBy(array('login' => $login));
+    $user = $entityManager->getRepository('Client')->findOneBy(array('login' => $login));
     
     $response = addHeaders($response);
     $response->getBody()->write(json_encode ($user));
@@ -183,7 +183,7 @@ $app->put('/api/client/{id}', function (Request $request, Response $response, $a
     $id = $args ['id'];
     global $entityManager;
     
-    $user = $entityManager->find('User', $id);
+    $user = $entityManager->find('Client', $id);
 
     if (!$err && $user!=null) {
         
@@ -245,10 +245,9 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     }
     var_dump($login, $password);
 
-    $user = $entityManager->getRepository('User');
+    $user = $entityManager->getRepository('Client');
     var_dump($user);
-    // $user = $user->findOneBy(array('login' => 'e', 'password' => 'e'));
-    $user = $user->findAll();   
+    $user = $user->findOneBy(array('login' => $login, 'password' => $password));
     var_dump($user);
 
 
