@@ -242,15 +242,12 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     if (!preg_match("/[a-zA-Z0-9]{1,20}/",$login)|| !preg_match("/[a-zA-Z0-9]{1,20}/",$password))  {
         $err=true;
     }
-    var_dump($login, $password);
 
     $user = $entityManager->getRepository('Client');
-    var_dump($user);
     $user = $user->findOneBy(array('login' => $login, 'password' => $password));
-    var_dump($user);
 
 
-    if (!$err && !empty($user)) {
+    if (!$err && $user) {
             $response = createJwT ($response,$login,$password);
             $data = array('login' => $login);
             $response = addHeaders($response);
